@@ -22,9 +22,7 @@ function convertPokemonToLi(pokemon) {
 
 const pokemonList = document.getElementById('pokemonList')
 
+//substitui o "for" pelo map (que cria uma lista de itens) e depois junta tudo com o "join('')" sem espaçamento
 pokeApi.getPokemons().then((pokemons) => {
-        for (let i = 1; i < pokemons.length; i++) {
-            const pokemon = pokemons[i];
-            pokemonList.innerHTML += convertPokemonToLi(pokemon)
-        }
+    pokemonList.innerHTML += pokemons.map(convertPokemonToLi).join('')
     })
