@@ -1,28 +1,52 @@
-const offset = 0
-const limit = 10
-const url = `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`
+const pokemonList = document.getElementById('pokemonList')
+const botaoNext = document.getElementById('next')
+const botaoPrev = document.getElementById('prev')
+const limit = 20
+let offset = 0
+let pagina = 1
 
-function convertPokemonToLi(pokemon) {
-    return `
-        <li class="pokemon">
-            <span class="numero">#001</span>
-            <span class="nome">${pokemon.name}</span>
-
-            <div class="detalhes">
-                <ol class="tipos">
-                    <li class="tipo">Grama</li>
-                    <li class="tipo">Veneno</li>
-                </ol>
-
-                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png" alt="${pokemon.name}">
-            </div>
-        </li>
-    `
+function changePokemonPage(offset, limit) {
+    function convertPokemonToLi(pokemon) {
+        return `
+            <li class="pokemon ${pokemon.mainType}">
+                <span class="numero">#${pokemon.id}</span>
+                <span class="nome">${pokemon.name}</span>
+    
+                <div class="detalhes">
+                    <ol class="tipos">
+                        ${pokemon.types.map((type) => `<li class="tipo ${type}">${type}</li>`).join('')}
+                    </ol>
+    
+                    <img src="${pokemon.image}" alt="${pokemon.name}">
+                </div>
+            </li>
+        `
+    }
+    
+    
+    //substitui o "for" pelo map (que cria uma lista de itens) e depois junta tudo com o "join('')" sem espaçamento
+    pokeApi.getPokemons(offset, limit).then((pokemons = []) => {
+        pokemonList.innerHTML = pokemons.map(convertPokemonToLi).join('')
+    })
 }
 
-const pokemonList = document.getElementById('pokemonList')
+changePokemonPage(offset, limit)
 
-//substitui o "for" pelo map (que cria uma lista de itens) e depois junta tudo com o "join('')" sem espaçamento
-pokeApi.getPokemons().then((pokemons) => {
-    pokemonList.innerHTML += pokemons.map(convertPokemonToLi).join('')
-    })
+botaoNext.addEventListener('click', () => {
+    pagina++
+    offset += limit
+    changePokemonPage(offset, limit)
+    document.getElementById('paginaAtual').innerHTML = `Page ${pagina}`
+})
+
+botaoPrev.addEventListener('click', () => {
+    if (offset >= 20){
+        pagina--
+        offset -= limit
+        changePokemonPage(offset, limit)
+        document.getElementById('paginaAtual').innerHTML = `Page ${pagina}`
+    }
+})
+
+
+
